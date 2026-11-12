@@ -1,162 +1,176 @@
-<div align="center">
+# JourneyJunction 🧭
 
-# 🧭 JourneyJunction
+JourneyJunction is a full-stack **travel stay listing website** built with Node.js, Express and MongoDB. Users can browse places to stay, see each location on an interactive map, sign up and log in, add their own listings with photos, and leave reviews and ratings.
 
-**A full-stack travel stay-listing platform. Discover places, list your own, and share reviews.**
+## 🔗 Live Demo
 
-![Node.js](https://img.shields.io/badge/Node.js-22.14-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-5-000000?logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)
-![EJS](https://img.shields.io/badge/Views-EJS-B4CA65)
-![License](https://img.shields.io/badge/License-ISC-blue)
+Check out the live project here: **[journeyjunction-ueyp.onrender.com](https://journeyjunction-ueyp.onrender.com/listings)**
 
-[Live Demo](https://journeyjuction.onrender.com/listings) · [Report a Bug](https://github.com/01-bhoomi/JourneyJunction/issues)
-
-</div>
-
-> ⏳ **Note:** On the free hosting tier the server sleeps after inactivity, so the first request can take up to a minute.
-
----
-
-## 📖 About
-
-JourneyJunction is a server-rendered web app built with **Node.js, Express and MongoDB**, following the **MVC** pattern. Users can browse stays, see each place on an interactive map, sign up, create listings with photo uploads, and leave ratings and reviews.
+> The app runs on a free hosting plan, so the first visit after some time can take up to a minute to load.
 
 ## ✨ Features
 
-| | Feature | Details |
-|---|---|---|
-| 🔐 | **Authentication** | Sign up, log in and log out with Passport.js (local strategy), hashed passwords |
-| 🏠 | **Listings (CRUD)** | Create, view, edit and delete listings; only the owner can edit or delete |
-| 🖼️ | **Image uploads** | Photos stored on Cloudinary through Multer |
-| 🗺️ | **Maps** | Location is geocoded with the Mapbox API and shown on a map |
-| ⭐ | **Reviews and ratings** | Logged-in users can add reviews; only the author can delete theirs |
-| ✅ | **Validation** | Server-side validation with Joi |
-| 💬 | **Flash messages** | Clear success and error feedback |
-| 🔒 | **Sessions** | Persistent sessions stored in MongoDB (`connect-mongo`) |
+- 🔐 **User Authentication**: Sign up, log in and log out with Passport.js. Passwords are stored in hashed form.
+- 🏠 **Listings**: Create, view, edit and delete listings. Only the owner of a listing can edit or delete it.
+- 🖼️ **Image Uploads**: Listing photos are uploaded to Cloudinary using Multer.
+- 🗺️ **Interactive Maps**: The location of each listing is found with the Mapbox API and shown on a map with a marker.
+- ⭐ **Reviews and Ratings**: Logged-in users can add a review with a rating from 1 to 5. Only the author of a review can delete it.
+- ✅ **Server-side Validation**: All form data is checked with Joi before it is saved.
+- 💬 **Flash Messages**: Clear success and error messages after every action.
+- 🔒 **Persistent Sessions**: Login sessions are stored in MongoDB, so users stay logged in.
+- 🎨 **Server-rendered Pages**: Pages are built with EJS and EJS-Mate layouts, styled with Bootstrap.
 
 ## 🛠️ Tech Stack
 
-| Layer | Technology |
+| Category | Technology |
 |---|---|
-| Runtime | Node.js 22 |
-| Framework | Express 5 |
-| Database | MongoDB Atlas + Mongoose |
-| Templating | EJS + EJS-Mate layouts, Bootstrap |
-| Auth | Passport.js, passport-local-mongoose |
-| Storage | Cloudinary, Multer |
-| Maps | Mapbox SDK |
+| Runtime | Node.js (v22.14.0) |
+| Framework | Express.js 5 |
+| Database | MongoDB Atlas with Mongoose |
+| Templating | EJS and EJS-Mate |
+| Styling | Bootstrap and custom CSS |
+| Authentication | Passport.js (local strategy) and passport-local-mongoose |
+| File Storage | Cloudinary and Multer |
+| Maps | Mapbox (geocoding and Mapbox GL JS) |
 | Validation | Joi |
-| Hosting | Render / Vercel |
+| Sessions | express-session and connect-mongo |
+| Other | connect-flash, method-override, dotenv |
 
 ## 📁 Project Structure
 
 ```
 JourneyJunction/
-├── controllers/      # Request handling logic
-├── models/           # Mongoose schemas: Listing, Review, User
-├── routes/           # Express routers: listings, reviews, users
-├── views/            # EJS templates (layouts, includes, pages)
-├── public/           # CSS and client-side JS
-├── utils/            # Error class and async wrapper
-├── init/             # Database seeding scripts
-├── app.js            # App entry point
-├── cloudConfig.js    # Cloudinary setup
-├── middleware.js     # Auth, ownership and validation middleware
-├── schema.js         # Joi schemas
-└── vercel.json       # Vercel configuration
+├── controllers/     # Logic for each route (listings, reviews, users)
+├── init/            # Sample data and database seeding script
+├── models/          # Mongoose schemas (Listing, Review, User)
+├── public/          # CSS and client-side JavaScript (map, form checks)
+├── routes/          # Route definitions
+├── utils/           # Helpers (custom error class, async wrapper)
+├── views/           # EJS pages, layouts and partials
+├── app.js           # Main entry point
+├── cloudConfig.js   # Cloudinary setup
+├── middleware.js    # Login, owner and validation checks
+├── schema.js        # Joi validation schemas
+├── vercel.json      # Vercel settings
+├── LICENSE
+└── package.json
 ```
+
+## 🗃️ Data Models
+
+| Model | Main fields |
+|---|---|
+| **Listing** | title, description, image, price, location, country, geometry (map coordinates), owner, reviews |
+| **Review** | comment, rating (1 to 5), author, createdAt |
+| **User** | username, email, password (hashed) |
 
 ## 🔗 Main Routes
 
-| Method | Route | Description | Auth |
+| Method | Route | What it does | Access |
 |---|---|---|---|
-| GET | `/listings` | All listings | No |
-| GET | `/listings/new` | New listing form | Yes |
-| POST | `/listings` | Create a listing | Yes |
-| GET | `/listings/:id` | Listing details, map and reviews | No |
-| GET | `/listings/:id/edit` | Edit form | Owner |
-| PUT / DELETE | `/listings/:id` | Update or delete a listing | Owner |
-| POST | `/listings/:id/reviews` | Add a review | Yes |
-| DELETE | `/listings/:id/reviews/:reviewId` | Delete a review | Author |
-| GET / POST | `/signup`, `/login` | Register and log in | No |
-| GET | `/logout` | Log out | Yes |
+| GET | `/listings` | Show all listings | Everyone |
+| GET | `/listings/new` | Show the new listing form | Logged in |
+| POST | `/listings` | Create a listing | Logged in |
+| GET | `/listings/:id` | Show a listing with its map and reviews | Everyone |
+| GET | `/listings/:id/edit` | Show the edit form | Owner |
+| PUT | `/listings/:id` | Update a listing | Owner |
+| DELETE | `/listings/:id` | Delete a listing | Owner |
+| POST | `/listings/:id/reviews` | Add a review | Logged in |
+| DELETE | `/listings/:id/reviews/:reviewId` | Delete a review | Review author |
+| GET / POST | `/signup` | Create an account | Everyone |
+| GET / POST | `/login` | Log in | Everyone |
+| GET | `/logout` | Log out | Logged in |
+
+## ⚙️ Prerequisites
+
+Before you begin, make sure you have:
+
+- [Node.js](https://nodejs.org/) (v22.14.0 recommended)
+- A [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) cluster, or a local MongoDB
+- A [Cloudinary](https://cloudinary.com/) account for image uploads
+- A [Mapbox](https://www.mapbox.com/) account for maps
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- [Node.js](https://nodejs.org/) 22 or newer
-- A [MongoDB Atlas](https://www.mongodb.com/atlas) cluster (or local MongoDB)
-- A [Cloudinary](https://cloudinary.com/) account
-- A [Mapbox](https://www.mapbox.com/) account
-
-### Setup
+### 1. Clone the repository
 
 ```bash
-# 1. Clone
 git clone https://github.com/01-bhoomi/JourneyJunction.git
 cd JourneyJunction
-
-# 2. Install
-npm install
-
-# 3. Create a .env file (see below)
-
-# 4. Run
-npm start
 ```
 
-Open **http://localhost:8080**.
+### 2. Install dependencies
 
-### Environment variables
+```bash
+npm install
+```
 
-Create a `.env` file in the project root:
+### 3. Set up environment variables
+
+Create a `.env` file in the main folder and add:
 
 ```env
 ATLASDB_URL=your_mongodb_connection_string
-SECRET=your_long_random_session_secret
+SECRET=your_session_secret
 CLOUD_NAME=your_cloudinary_cloud_name
 CLOUD_API_KEY=your_cloudinary_api_key
 CLOUD_API_SECRET=your_cloudinary_api_secret
-MAP_TOKEN=your_mapbox_public_token
+MAP_TOKEN=your_mapbox_access_token
 ```
 
-> ⚠️ Never commit `.env`. It is already listed in `.gitignore`. Never paste real passwords or keys into code or comments.
+> ⚠️ Never upload your `.env` file to GitHub. It is already listed in `.gitignore`.
 
-### Seed sample data (optional)
+### 4. Run the app
 
 ```bash
-node init/index.js
+npm start
 ```
 
-## ☁️ Deployment
+Then open:
 
-Set all the environment variables above (plus `NODE_ENV=production`) on the platform you choose. In MongoDB Atlas, allow the host in **Network Access** (for example `0.0.0.0/0`).
+```
+http://localhost:8080
+```
+
+## 🔑 Environment Variables
+
+| Variable | Description |
+|---|---|
+| `ATLASDB_URL` | MongoDB connection string |
+| `SECRET` | Secret key used to protect login sessions |
+| `CLOUD_NAME` | Cloudinary cloud name |
+| `CLOUD_API_KEY` | Cloudinary API key |
+| `CLOUD_API_SECRET` | Cloudinary API secret |
+| `MAP_TOKEN` | Mapbox public access token |
+
+## 🌐 Deployment
 
 ### Render
-1. **New → Web Service**, connect this repository.
-2. Build command: `npm install`
-3. Start command: `npm start`
-4. Add the environment variables and deploy.
+
+1. Push the project to GitHub and connect the repository to Render.
+2. Set the **Build Command** to `npm install`.
+3. Set the **Start Command** to `npm start`.
+4. Add all the environment variables above, and also `NODE_ENV` with the value `production`.
+5. In MongoDB Atlas, open **Network Access** and allow access from `0.0.0.0/0`.
+6. Click **Deploy**.
 
 ### Vercel
-1. **Add New → Project**, import this repository.
-2. Add the environment variables.
-3. Deploy. `vercel.json` already routes all requests to `app.js`.
+
+Import the repository, add the same environment variables and deploy. The included `vercel.json` sends all requests to `app.js`.
 
 ## 🧯 Troubleshooting
 
-| Problem | Fix |
+| Problem | What to check |
 |---|---|
-| Deploy fails right away | Make sure the start command is `npm start` and all env variables are set |
-| `Internal Server Error` | Check the host logs, usually a missing env variable or Atlas network access |
-| Database does not connect | Allow your host's IP in Atlas Network Access and check `ATLASDB_URL` |
-| Map or image upload fails | Check `MAP_TOKEN` and the Cloudinary keys |
-
-## 👤 Author
-
-**Bhoomi Singh** · [GitHub @01-bhoomi](https://github.com/01-bhoomi)
+| Deploy fails right away | The start command should be `npm start` and all environment variables must be set |
+| Internal Server Error | Open the hosting logs. Usually a variable is missing or the database is not reachable |
+| Database does not connect | Allow your host in Atlas Network Access and check `ATLASDB_URL` |
+| Map or photo upload fails | Check `MAP_TOKEN` and the Cloudinary keys |
 
 ## 📄 License
 
-Released under the ISC License.
+This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+
+## 👤 Author
+
+Developed by [Bhoomi Singh](https://github.com/01-bhoomi)
